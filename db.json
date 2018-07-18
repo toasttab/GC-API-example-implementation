@@ -1,0 +1,21 @@
+{
+  "cards": [
+    {
+      "number": "1",
+      "balance": "-20.20",
+      "active": true
+    },
+    {
+      "number": "2",
+      "balance": "0.00",
+      "active": true
+    },
+    {
+      "number": "3",
+      "balance": "23.6",
+      "active": true
+    }
+  ],
+  "transactions": [
+  ]
+}

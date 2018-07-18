@@ -1,0 +1,24 @@
+{
+  "name": "gc-api-example-implementation",
+  "version": "1.0.0",
+  "description": "An example implementation of our Gift Card API",
+  "main": "server.js",
+  "dependencies": {
+    "lowdb": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toasttab/GC-API-example-implementation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/toasttab/GC-API-example-implementation/issues"
+  },
+  "homepage": "https://github.com/toasttab/GC-API-example-implementation#readme"
+}

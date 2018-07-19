@@ -4,8 +4,8 @@ function activate(identifier, initialBalance) {
   setActivate(identifier, initialBalance, true);
 }
 
-function deactivate(){
-  setActivate(identifier, initialBalance, false);
+function deactivate(identifier){
+  setActivate(identifier, "0.0", false);
 }
 
 function addValue(identifier, amount) {

@@ -28,7 +28,7 @@ http.createServer(function (req, res) {
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, {'Content-Type': 'application/json'});
         res.end();
         break;
       case "GIFTCARD_ADD_VALUE":
@@ -42,14 +42,14 @@ http.createServer(function (req, res) {
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, {'Content-Type': 'application/json'});
         res.end();
         break;
       case "GIFTCARD_GET_BALANCE":
         info = body['getBalanceTransactionInformation'];
         identifier = info['giftCardIdentifier'];
         var balance = cards.getBalance(identifier);
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, {'Content-Type': 'application/json'});
         res.write(balance);
         res.end();
         break;
@@ -64,19 +64,22 @@ http.createServer(function (req, res) {
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, {'Content-Type': 'application/json'});
         res.end();
         break;
       case "GIFTCARD_REVERSE":
         info = body['reverseTransactionInformation'];
         identifier = info['giftCardIdentifier'];
-        var transactionToReverse = info['previousTransaction'];
+        // logic for reversing a transaction is handled in transactions.js
+        transactions.reverse(info['previousTransaction']);
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end();
     }
   });
 }).listen(8080);
 
 function errorResponse(res, transactionStatus){
-  res.writeHead(400, {'Content-Type': 'text/html'});
+  res.writeHead(400, {'Content-Type': 'application/json'});
   res.write(JSON.stringify({
     transactionStatus: transactionStatus
   }));

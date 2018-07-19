@@ -2,7 +2,7 @@
   "cards": [
     {
       "number": "1",
-      "balance": "-20.20",
+      "balance": "-17.20",
       "active": true
     },
     {
@@ -12,10 +12,34 @@
     },
     {
       "number": "3",
-      "balance": "23.6",
-      "active": true
+      "balance": "0.0",
+      "active": false
     }
   ],
   "transactions": [
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    }
   ]
 }

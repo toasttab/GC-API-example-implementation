@@ -9,16 +9,16 @@ function reverse(transactionGuid){
   var transaction = getTransaction(transactionGuid);
   var method = transaction['method'];
   var amount = transaction['amount'];
-  var card = cards.find(transaction['cardNumber']);
+  var cardNumber = transaction['cardNumber'];
   switch(method){
     case "activate":
-      cards.deactivate(card);
+      cards.deactivate(cardNumber);
       break;
     case "redeem":
-
+      cards.addValue(cardNumber, amount);
       break;
     case "add_value":
-
+      cards.redeem(cardNumber, amount);
       break;
   }
 }
@@ -27,4 +27,4 @@ function getTransaction(transactionGuid){
   return db.find('transactions', {guid: transactionGuid});
 }
 
-module.exports = {save}
+module.exports = {save, reverse}

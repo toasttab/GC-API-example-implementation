@@ -2,12 +2,12 @@
   "cards": [
     {
       "number": "1",
-      "balance": "-17.20",
+      "balance": "242.40",
       "active": true
     },
     {
       "number": "2",
-      "balance": "0.00",
+      "balance": "2.03",
       "active": true
     },
     {
@@ -40,6 +40,186 @@
       "method": "activate",
       "amount": "3.0",
       "cardNumber": "3"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "1"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876543265",
+      "method": "add_value",
+      "amount": "20.2",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543265",
+      "method": "redeem",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "9876875543",
+      "method": "activate",
+      "amount": "3.0",
+      "cardNumber": "3"
+    },
+    {
+      "guid": "ef31aed1-15a6-4a55-99c9-e9776124cc0d",
+      "method": "add_value",
+      "amount": 2,
+      "cardNumber": "2"
+    },
+    {
+      "guid": "fee01add-240b-4c32-ac22-0dd443e3cd70",
+      "method": "add_value",
+      "amount": 0.03,
+      "cardNumber": "2"
     }
   ]
 }

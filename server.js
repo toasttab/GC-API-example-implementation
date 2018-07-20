@@ -16,72 +16,134 @@ http.createServer(function (req, res) {
     var info;
     var identifier;
     var amount;
+    var card;
+    var responseBody;
     switch(transactionType) {
       case "GIFTCARD_ACTIVATE":
-        info = body['activateTransactionInformation'];
-        identifier = info['giftCardIdentifier'];
-        amount = info['initialBalance']
-        cards.activate(identifier, amount);
+        try {
+          info = getPropOrErr(body, 'activateTransactionInformation');
+          identifier = getPropOrErr(info, 'giftCardIdentifier');
+          amount = getPropOrErr(info, 'initialBalance');
+          card = cards.activate(identifier, amount);
+        } catch (e) {
+          errorResponse(res, e);
+          return
+        }
         transactions.save({
           guid: transactionGuid,
           method: "activate",
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
-        break;
+        responseBody = {
+          activateResponse: {
+            currentBalance: card['balance']
+          }
+        };
+        successResponse(res, responseBody);
+        return;
       case "GIFTCARD_ADD_VALUE":
-        info = body['addValueTransactionInformation'];
-        identifier = info['giftCardIdentifier'];
-        amount = info['additionalValue'];
-        cards.addValue(identifier, amount);
+        try {
+          info = getPropOrErr(body, 'addValueTransactionInformation');
+          identifier = getPropOrErr(info, 'giftCardIdentifier');
+          amount = getPropOrErr(info, 'additionalValue');
+          card = cards.addValue(identifier, amount);
+        } catch (e) {
+          errorResponse(res, e);
+          return;
+        }
         transactions.save({
           guid: transactionGuid,
           method: "add_value",
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
-        break;
+        responseBody = {
+          addValueResponse: {
+            currentBalance: card['balance']
+          }
+        };
+        successResponse(res, responseBody);
+        return;
       case "GIFTCARD_GET_BALANCE":
-        info = body['getBalanceTransactionInformation'];
-        identifier = info['giftCardIdentifier'];
-        var balance = cards.getBalance(identifier);
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.write(balance);
-        res.end();
-        break;
+        try {
+          info = getPropOrErr(body, 'getBalanceTransactionInformation');
+          identifier = getPropOrErr(info, 'giftCardIdentifier');
+          var balance = cards.getBalance(identifier);
+        } catch (e) {
+          errorResponse(res, e);
+          return;
+        }
+        responseBody = {
+          getBalanceResponse: {
+            currentBalance: balance
+          }
+        };
+        successResponse(res, responseBody);
+        return;
       case "GIFTCARD_REDEEM":
-        info = body['redeemTransactionInformation'];
-        identifier = info['giftCardIdentifier'];
-        amount = info['redeemedValue'];
-        cards.redeem(info['giftCardIdentifier'], amount);
+        try {
+          info = getPropOrErr(body, 'redeemTransactionInformation');
+          identifier = getPropOrErr(info, 'giftCardIdentifier');
+          amount = getPropOrErr(info, 'redeemedValue');
+          var origBalance = parseFloat(cards.find(info['giftCardIdentifier'])['balance']);
+          card = cards.redeem(info['giftCardIdentifier'], amount);
+        } catch (e) {
+          errorResponse(res, e);
+          return;
+        }
         transactions.save({
           guid: transactionGuid,
           method: "redeem",
           amount: amount,
           cardNumber: identifier
         });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
-        break;
+        responseBody = {
+          redeemResponse: {
+            currentBalance: card['balance'],
+            redeemedValue: (origBalance - parseFloat(card['balance'])).toFixed(2)
+          }
+        };
+        successResponse(res, responseBody);
+        return;
       case "GIFTCARD_REVERSE":
-        info = body['reverseTransactionInformation'];
-        identifier = info['giftCardIdentifier'];
-        // logic for reversing a transaction is handled in transactions.js
-        transactions.reverse(info['previousTransaction']);
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        try {
+          info = getPropOrErr(body, 'reverseTransactionInformation');
+          identifier = getPropOrErr(info, 'giftCardIdentifier');
+          var prevTxn = getPropOrErr(info, 'previousTransaction');
+          // logic for reversing a transaction is handled in transactions.js
+          var balance = transactions.reverse(prevTxn, identifier);
+        } catch (e) {
+          errorResponse(res, e);
+          return;
+        }
+        responseBody = {
+          reverseResponse: {
+            currentBalance: balance
+          }
+        };
+        successResponse(res, responseBody);
     }
   });
-}).listen(8080);
+}).listen(18181);
 
-function errorResponse(res, transactionStatus){
+function successResponse(res, responseBody) {
+  responseBody['transactionStatus'] = "ACCEPT";
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify(responseBody));
+}
+
+function errorResponse(res, transactionStatus) {
   res.writeHead(400, {'Content-Type': 'application/json'});
-  res.write(JSON.stringify({
+  res.end(JSON.stringify({
     transactionStatus: transactionStatus
   }));
-  res.end();
+}
+
+function getPropOrErr(info, infoProperty) {
+  var prop = info[infoProperty];
+  if (prop == null) {
+    throw "ERROR_INVALID_INPUT_PROPERTIES"
+  }
+  return prop;
 }

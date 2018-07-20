@@ -1,18 +1,21 @@
 const db = require('./db')
 
 function activate(identifier, initialBalance) {
-  setActivate(identifier, initialBalance, true);
+  if(getCard(identifier)['active']) throw "ERROR_CARD_ALREADY_ACTIVATED";
+  return setActivate(identifier, initialBalance, true);
 }
 
-function deactivate(identifier){
-  setActivate(identifier, "0.0", false);
+function deactivate(identifier) {
+  if(!getCard(identifier)['active']) throw "ERROR_CARD_NOT_ACTIVATED";
+  return setActivate(identifier, "0.0", false);
 }
 
 function addValue(identifier, amount) {
   var card = getCard(identifier);
+  if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var origBalance = parseFloat(card['balance']);
   card['balance'] = (origBalance + parseFloat(amount)).toFixed(2);
-  update(card);
+  return update(card);
 }
 
 function getBalance(identifier) {
@@ -21,31 +24,37 @@ function getBalance(identifier) {
 
 function redeem(identifier, amount) {
   var card = getCard(identifier);
+  if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var origBalance = parseFloat(card['balance']);
-  card['balance'] = (origBalance - parseFloat(amount)).toFixed(2);
-  update(card);
+  var balance = origBalance - parseFloat(amount);
+  if (balance < 0.0) balance = 0.0;
+  card['balance'] = balance.toFixed(2);
+  return update(card);
 }
 
-function find(identifier){
+function find(identifier) {
   return getCard(identifier);
 }
 
 
-function setActivate(identifier, initialBalance, activate){
+function setActivate(identifier, initialBalance, activate) {
   var card = getCard(identifier)
   card['active'] = activate;
   if(initialBalance!=null){
     card['balance'] = initialBalance;
   }
-  update(card);
+  return update(card);
 }
 
-function update(card){
+function update(card) {
   db.update('cards', card);
+  return card;
 }
 
-function getCard(identifier){
-  return db.find('cards', {number: identifier});
+function getCard(identifier) {
+  var card = db.find('cards', {number: identifier});
+  if (card == null) throw "ERROR_CARD_INVALID";
+  return card;
 }
 
 module.exports = {activate, deactivate, addValue, getBalance, redeem, find};

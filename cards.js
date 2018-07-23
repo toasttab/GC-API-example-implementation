@@ -41,7 +41,7 @@ function setActivate(identifier, initialBalance, activate) {
   var card = getCard(identifier)
   card['active'] = activate;
   if(initialBalance!=null){
-    card['balance'] = initialBalance;
+    card['balance'] = initialBalance.toString();
   }
   return update(card);
 }

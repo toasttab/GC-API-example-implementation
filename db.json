@@ -7,218 +7,32 @@
     },
     {
       "number": "2",
-      "balance": "2.03",
+      "balance": "0.00",
       "active": true
     },
     {
       "number": "3",
-      "balance": "0.0",
+      "balance": "0.00",
       "active": false
     }
   ],
   "transactions": [
     {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876875543",
+      "guid": "449191cb-1479-4046-a1e1-4ff761bffae5",
       "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "1"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876543265",
-      "method": "add_value",
-      "amount": "20.2",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543265",
-      "method": "redeem",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "9876875543",
-      "method": "activate",
-      "amount": "3.0",
-      "cardNumber": "3"
-    },
-    {
-      "guid": "ef31aed1-15a6-4a55-99c9-e9776124cc0d",
-      "method": "add_value",
-      "amount": 2,
+      "amount": 2.22,
       "cardNumber": "2"
     },
     {
-      "guid": "fee01add-240b-4c32-ac22-0dd443e3cd70",
+      "guid": "40d052e0-9df4-4ed1-906e-9072a46f6cfa",
       "method": "add_value",
-      "amount": 0.03,
+      "amount": 0.02,
+      "cardNumber": "2"
+    },
+    {
+      "guid": "13ae2bf3-86a8-478a-aa7a-26a523cef4fe",
+      "method": "redeem",
+      "amount": 2.24,
       "cardNumber": "2"
     }
   ]

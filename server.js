@@ -12,6 +12,7 @@ http.createServer(function (req, res) {
     body += chunk.toString(); // converting body buffer to string
   });
   req.on('end', () => {
+    console.log('Request recieved: ' + body);
     body = JSON.parse(body) // converting body string to JSON
     var info;
     var identifier;
@@ -129,12 +130,15 @@ http.createServer(function (req, res) {
 
 function successResponse(res, responseBody) {
   responseBody['transactionStatus'] = "ACCEPT";
+  responseBody = JSON.stringify(responseBody);
   res.writeHead(200, {'Content-Type': 'application/json'});
-  res.end(JSON.stringify(responseBody));
+  console.log('Successful response: ' + responseBody)
+  res.end(responseBody);
 }
 
 function errorResponse(res, transactionStatus) {
   res.writeHead(400, {'Content-Type': 'application/json'});
+  console.log('Error response: ' + transactionStatus);
   res.end(JSON.stringify({
     transactionStatus: transactionStatus
   }));

@@ -26,6 +26,7 @@ http.createServer((req, res) => {
   var transactionType = req.headers['Toast-Transaction-Type'.toLowerCase()]; // toLowerCase because the http module
   var transactionGuid = req.headers['Toast-Transaction-GUID'.toLowerCase()]; //     stores all headers as lowercase
   var token = req.headers['authorization'];
+  // verify that the JWT is valid and from Toast
   try {
     var decoded = jwt.verify(token, publicKey, {algorithms: ['RS256']});
   } catch (e) {

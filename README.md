@@ -10,6 +10,22 @@ It's a basic server written in Node.js that handles requests from Toast.
 
 ## How to run it
 
-**You have to have `node` and `npm` installed.**
+**First, You have to have `node` and `npm` installed.**
 
 Clone the repository and `cd` into it.
+
+Install all the node dependencies with:
+```
+npm install
+```
+
+Then start the server with:
+```
+npm start
+```
+Now the server will be running at `localhost:18181`
+
+By default it will use the public key (for JWT verification) from the Toast sandbox environment. However you can change the URL of the public key by supplying it as an argument to `npm install`. So if I wanted to use the public key from the Toast production environment I would supply run the server like so:
+```
+npm start https://ws-api.toasttab.com/usermgmt/v1/oauth/token_key
+```

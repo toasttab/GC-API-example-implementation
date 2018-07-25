@@ -29,7 +29,7 @@ http.createServer((req, res) => {
   try {
     var decoded = jwt.verify(token, publicKey, {algorithms: ['RS256']});
   } catch (e) {
-    errorResponse(res);
+    errorResponse(res, 'ERROR_INVALID_TOKEN');
     return;
   }
   if (transactionType == null) return errorResponse(res, 'ERROR_INVALID_TOAST_TRANSACTION_TYPE');
@@ -52,62 +52,62 @@ http.createServer((req, res) => {
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           amount = getPropOrErr(info, 'initialBalance');
           card = cards.activate(identifier, amount);
+          transactions.save({
+            guid: transactionGuid,
+            method: 'activate',
+            amount: amount,
+            cardNumber: identifier
+          });
+          responseBody = {
+            activateResponse: {
+              currentBalance: card['balance']
+            }
+          };
+          successResponse(res, responseBody);
+          return;
         } catch (e) {
           errorResponse(res, e);
           return;
         }
-        transactions.save({
-          guid: transactionGuid,
-          method: 'activate',
-          amount: amount,
-          cardNumber: identifier
-        });
-        responseBody = {
-          activateResponse: {
-            currentBalance: card['balance']
-          }
-        };
-        successResponse(res, responseBody);
-        return;
       case 'GIFTCARD_ADD_VALUE':
         try {
           info = getPropOrErr(body, 'addValueTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           amount = getPropOrErr(info, 'additionalValue');
           card = cards.addValue(identifier, amount);
+          transactions.save({
+            guid: transactionGuid,
+            method: 'add_value',
+            amount: amount,
+            cardNumber: identifier
+          });
+          responseBody = {
+            addValueResponse: {
+              currentBalance: card['balance']
+            }
+          };
+          successResponse(res, responseBody);
+          return;
         } catch (e) {
           errorResponse(res, e);
           return;
         }
-        transactions.save({
-          guid: transactionGuid,
-          method: 'add_value',
-          amount: amount,
-          cardNumber: identifier
-        });
-        responseBody = {
-          addValueResponse: {
-            currentBalance: card['balance']
-          }
-        };
-        successResponse(res, responseBody);
-        return;
       case 'GIFTCARD_GET_BALANCE':
         try {
           info = getPropOrErr(body, 'getBalanceTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           var balance = cards.getBalance(identifier);
+          responseBody = {
+            getBalanceResponse: {
+              currentBalance: balance
+            }
+          };
+          successResponse(res, responseBody);
+          return;
         } catch (e) {
           errorResponse(res, e);
           return;
         }
-        responseBody = {
-          getBalanceResponse: {
-            currentBalance: balance
-          }
-        };
-        successResponse(res, responseBody);
-        return;
       case 'GIFTCARD_REDEEM':
         try {
           info = getPropOrErr(body, 'redeemTransactionInformation');
@@ -115,24 +115,24 @@ http.createServer((req, res) => {
           amount = getPropOrErr(info, 'redeemedValue');
           var origBalance = parseFloat(cards.find(info['giftCardIdentifier'])['balance']);
           card = cards.redeem(info['giftCardIdentifier'], amount);
+          transactions.save({
+            guid: transactionGuid,
+            method: 'redeem',
+            amount: amount,
+            cardNumber: identifier
+          });
+          responseBody = {
+            redeemResponse: {
+              currentBalance: card['balance'],
+              redeemedValue: (origBalance - parseFloat(card['balance'])).toFixed(2)
+            }
+          };
+          successResponse(res, responseBody);
+          return;
         } catch (e) {
           errorResponse(res, e);
           return;
         }
-        transactions.save({
-          guid: transactionGuid,
-          method: 'redeem',
-          amount: amount,
-          cardNumber: identifier
-        });
-        responseBody = {
-          redeemResponse: {
-            currentBalance: card['balance'],
-            redeemedValue: (origBalance - parseFloat(card['balance'])).toFixed(2)
-          }
-        };
-        successResponse(res, responseBody);
-        return;
       case 'GIFTCARD_REVERSE':
         try {
           info = getPropOrErr(body, 'reverseTransactionInformation');
@@ -140,16 +140,17 @@ http.createServer((req, res) => {
           var prevTxn = getPropOrErr(info, 'previousTransaction');
           // logic for reversing a transaction is handled in transactions.js
           var balance = transactions.reverse(prevTxn, identifier);
+          responseBody = {
+            reverseResponse: {
+              currentBalance: balance
+            }
+          };
+          successResponse(res, responseBody);
+          return;
         } catch (e) {
           errorResponse(res, e);
           return;
         }
-        responseBody = {
-          reverseResponse: {
-            currentBalance: balance
-          }
-        };
-        successResponse(res, responseBody);
     }
   });
 }).listen(18181);

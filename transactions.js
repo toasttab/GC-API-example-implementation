@@ -2,6 +2,7 @@ const db = require('./db')
 const cards = require('./cards')
 
 function save(transaction){
+  if (transaction['guid'] == null) throw "ERROR_INVALID_INPUT_PROPERTIES";
   db.push('transactions', transaction);
 }
 

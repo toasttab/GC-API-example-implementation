@@ -2,7 +2,7 @@
   "cards": [
     {
       "number": "1",
-      "balance": "242.40",
+      "balance": "230.72",
       "active": true
     },
     {
@@ -34,6 +34,12 @@
       "method": "redeem",
       "amount": 2.24,
       "cardNumber": "2"
+    },
+    {
+      "guid": "f54140bb-80e7-4a36-813b-6c05ad847286",
+      "method": "redeem",
+      "amount": 11.68,
+      "cardNumber": "1"
     }
   ]
 }

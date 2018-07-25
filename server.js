@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const cards = require('./cards')
 const transactions = require('./transactions')
 
-// get the public key
+// get the public key for JWT verification
 var publicKey;
 var req = https.get('https://services.eng.toasttab.com:13443/oauth/token_key', (res) => {
   var rawData = '';

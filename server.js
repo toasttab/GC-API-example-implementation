@@ -6,8 +6,7 @@ const cards = require('./cards')
 const transactions = require('./transactions')
 
 // get the public key for JWT verification
-var publicKey;
-var req = https.get('https://services.eng.toasttab.com:13443/oauth/token_key', (res) => {
+var req = https.get(publicKeyUrl(), (res) => {
   var rawData = '';
   res.on('data', (chunk) => { rawData += chunk; });
   res.on('end', () => {
@@ -179,4 +178,14 @@ function getPropOrErr(info, infoProperty) {
     throw 'ERROR_INVALID_INPUT_PROPERTIES'
   }
   return prop;
+}
+
+function publicKeyUrl() {
+  // get the publicKey URL, which can be supplied as an argument: `npm start <URL>` or `node server.js <URL>`
+  // if it is not supplied as an argument it will default to the Toast sandbox public key
+  if (process.argv[2] != null) {
+    return process.argv[2];
+  } else {
+    return 'https://ws-sandbox-api.eng.toasttab.com/usermgmt/v1/oauth/token_key';
+  }
 }

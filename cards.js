@@ -19,7 +19,7 @@ function addValue(identifier, amount) {
 }
 
 function getBalance(identifier) {
-  return getCard(identifier)['balance'].toString();
+  return getCard(identifier)['balance'];
 }
 
 function redeem(identifier, amount) {
@@ -41,7 +41,7 @@ function setActivate(identifier, initialBalance, activate) {
   var card = getCard(identifier)
   card['active'] = activate;
   if(initialBalance!=null){
-    card['balance'] = initialBalance.toString();
+    card['balance'] = parseFloat(initialBalance).toFixed(2);
   }
   return update(card);
 }

@@ -18,6 +18,7 @@ var req = https.get(publicKeyUrl(), (res) => {
   });
 });
 
+var port = 18181;
 
 // In a real implementation, HTTPS must be used
 http.createServer((req, res) => {
@@ -60,7 +61,7 @@ http.createServer((req, res) => {
           });
           responseBody = {
             activateResponse: {
-              currentBalance: card['balance']
+              currentBalance: parseFloat(card['balance']) //parseFloat because API requires double, not string
             }
           };
           successResponse(res, responseBody);
@@ -83,7 +84,7 @@ http.createServer((req, res) => {
           });
           responseBody = {
             addValueResponse: {
-              currentBalance: card['balance']
+              currentBalance: parseFloat(card['balance'])
             }
           };
           successResponse(res, responseBody);
@@ -99,7 +100,7 @@ http.createServer((req, res) => {
           var balance = cards.getBalance(identifier);
           responseBody = {
             getBalanceResponse: {
-              currentBalance: balance
+              currentBalance: parseFloat(balance)
             }
           };
           successResponse(res, responseBody);
@@ -123,8 +124,8 @@ http.createServer((req, res) => {
           });
           responseBody = {
             redeemResponse: {
-              currentBalance: card['balance'],
-              redeemedValue: (origBalance - parseFloat(card['balance'])).toFixed(2)
+              currentBalance: parseFloat(card['balance']),
+              redeemedValue: parseFloat((origBalance - parseFloat(card['balance'])).toFixed(2))
             }
           };
           successResponse(res, responseBody);
@@ -142,7 +143,7 @@ http.createServer((req, res) => {
           var balance = transactions.reverse(prevTxn, identifier);
           responseBody = {
             reverseResponse: {
-              currentBalance: balance
+              currentBalance: parseFloat(balance)
             }
           };
           successResponse(res, responseBody);
@@ -153,7 +154,9 @@ http.createServer((req, res) => {
         }
     }
   });
-}).listen(18181);
+}).listen(port);
+
+console.log('Server is up and listening at localhost:' + port);
 
 function successResponse(res, responseBody) {
   responseBody['transactionStatus'] = 'ACCEPT';

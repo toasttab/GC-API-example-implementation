@@ -14,12 +14,14 @@ function addValue(identifier, amount) {
   var card = getCard(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var origBalance = parseFloat(card['balance']);
-  card['balance'] = (origBalance + parseFloat(amount)).toFixed(2);
+  card['balance'] = (origBalance + parseFloat(amount)).toFixed(2); // toFixed(2) will turn the double into a string with 2 places after the decimal
   return update(card);
 }
 
 function getBalance(identifier) {
-  return getCard(identifier)['balance'];
+  var card = getCard(identifier);
+  if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
+  return card['balance'];
 }
 
 function redeem(identifier, amount) {

@@ -152,6 +152,9 @@ http.createServer((req, res) => {
           errorResponse(res, e);
           return;
         }
+      default:
+        errorResponse(res, 'ERROR_INVALID_TOAST_TRANSACTION_TYPE');
+        return;
     }
   });
 }).listen(port);

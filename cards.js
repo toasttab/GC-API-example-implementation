@@ -2,7 +2,7 @@ const db = require('./db')
 const transactions = require('./transactions')
 
 function activate(transactionGuid, identifier, initialBalance) {
-  var card = getCard(identifier)
+  var card = find(identifier)
   if(card['active']) throw "ERROR_CARD_ALREADY_ACTIVATED";
   card['active'] = true;
   if(initialBalance!=null){
@@ -13,7 +13,7 @@ function activate(transactionGuid, identifier, initialBalance) {
 }
 
 function addValue(transactionGuid, identifier, amount) {
-  var card = getCard(identifier);
+  var card = find(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var origBalance = parseFloat(card['balance']);
   card['balance'] = (origBalance + parseFloat(amount)).toFixed(2); // toFixed(2) will turn the double into a string with 2 places after the decimal
@@ -22,13 +22,13 @@ function addValue(transactionGuid, identifier, amount) {
 }
 
 function getBalance(identifier) {
-  var card = getCard(identifier);
+  var card = find(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   return card['balance'];
 }
 
 function redeem(transactionGuid, identifier, amount) {
-  var card = getCard(identifier);
+  var card = find(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var origBalance = parseFloat(card['balance']);
   var balance = origBalance - parseFloat(amount);
@@ -39,11 +39,10 @@ function redeem(transactionGuid, identifier, amount) {
 }
 
 function reverse(newTransactionGuid, oldTransactionGuid, identifier) {
-  var card = getCard(identifier);
+  var card = find(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var transaction = transactions.find(oldTransactionGuid, identifier);
   if (transaction['reversed']) throw "ERROR_TRANSACTION_ALREADY_REVERSED"
-  var card = getCard(identifier);
   var currentBalance = parseFloat(card['balance']);
   var transactionAmount = parseFloat(transaction['amount']);
   switch(transaction['method']){
@@ -79,4 +78,4 @@ function update(card) {
   return card;
 }
 
-module.exports = {activate, deactivate, addValue, getBalance, redeem, find};
+module.exports = {activate, addValue, getBalance, redeem, reverse, find};

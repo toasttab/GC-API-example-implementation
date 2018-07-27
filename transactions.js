@@ -13,7 +13,7 @@ function create(type, transactionGuid, identifier, amount){
 
 function update(transaction){
   if (transaction['guid'] == null) throw "ERROR_INVALID_INPUT_PROPERTIES";
-  db.udpate('transactions', transaction);
+  db.update('transactions', transaction);
 }
 
 function find(transactionGuid, cardNumber){

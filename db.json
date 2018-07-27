@@ -21,25 +21,29 @@
       "guid": "449191cb-1479-4046-a1e1-4ff761bffae5",
       "method": "activate",
       "amount": 2.22,
-      "cardNumber": "2"
+      "cardNumber": "2",
+      "reversed": false
     },
     {
       "guid": "40d052e0-9df4-4ed1-906e-9072a46f6cfa",
       "method": "add_value",
       "amount": 0.02,
-      "cardNumber": "2"
+      "cardNumber": "2",
+      "reversed": false
     },
     {
       "guid": "13ae2bf3-86a8-478a-aa7a-26a523cef4fe",
       "method": "redeem",
       "amount": 2.24,
-      "cardNumber": "2"
+      "cardNumber": "2",
+      "reversed": false
     },
     {
       "guid": "f54140bb-80e7-4a36-813b-6c05ad847286",
       "method": "redeem",
       "amount": 11.68,
-      "cardNumber": "1"
+      "cardNumber": "1",
+      "reversed": false
     }
   ]
 }

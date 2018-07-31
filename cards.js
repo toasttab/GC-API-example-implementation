@@ -54,7 +54,7 @@ function reverse(newTransactionGuid, oldTransactionGuid, identifier) {
       card['balance'] = '0.00';
       break;
     case "redeem":
-      card['balance'] = (currentBalance - transactionAmount).toFixed(2);
+      card['balance'] = (currentBalance + transactionAmount).toFixed(2);
       break;
     case "add_value":
       if (currentBalance < transactionAmount) throw "ERROR_TRANSACTION_CANNOT_BE_REVERSED"

@@ -21,7 +21,7 @@ function find(transactionGuid, cardNumber){
     guid: transactionGuid,
     cardNumber: cardNumber
   });
-  if (txn == null) throw "ERROR_TRANSACTION_DOES_NOT_EXIST";
+  if (txn == null) throw "ERROR_TRANSACTION_TO_REVERSE_DOES_NOT_EXIST";
   return txn;
 }
 

@@ -24,13 +24,17 @@ http.createServer((req, res) => {
   if (req.method != 'POST') return errorResponse(res);
   var transactionType = req.headers['Toast-Transaction-Type'.toLowerCase()]; // toLowerCase because the http module
   var transactionGuid = req.headers['Toast-Transaction-GUID'.toLowerCase()]; //     stores all headers as lowercase
+  var restaurantGuid = req.headers['Toast-Restaurant-External-ID'.toLowerCase()];
   var token = req.headers['authorization'];
+  // if one of the headers are null or invalid
+  if ( !(transactionType && transactionGuid && restaurantGuid && token) ) {
+    return errorResponse(res, 'ERROR_INVALID_INPUT_PROPERTIES');
+  }
   // verify that the JWT is valid and from Toast
   try {
     var decoded = jwt.verify(token, publicKey, {algorithms: ['RS256']});
   } catch (e) {
-    errorResponse(res, 'ERROR_INVALID_TOKEN');
-    return;
+    return errorResponse(res, 'ERROR_INVALID_TOKEN');
   }
   if (transactionType == null) return errorResponse(res, 'ERROR_INVALID_TOAST_TRANSACTION_TYPE');
   let body = '';
@@ -57,11 +61,9 @@ http.createServer((req, res) => {
               currentBalance: parseFloat(card['balance']) //parseFloat because API requires double, not string
             }
           };
-          successResponse(res, responseBody);
-          return;
+          return successResponse(res, responseBody);
         } catch (e) {
-          errorResponse(res, e);
-          return;
+          return errorResponse(res, e);
         }
       case 'GIFTCARD_ADD_VALUE':
         try {
@@ -74,11 +76,9 @@ http.createServer((req, res) => {
               currentBalance: parseFloat(card['balance'])
             }
           };
-          successResponse(res, responseBody);
-          return;
+          return successResponse(res, responseBody);
         } catch (e) {
-          errorResponse(res, e);
-          return;
+          return errorResponse(res, e);
         }
       case 'GIFTCARD_GET_BALANCE':
         try {
@@ -90,11 +90,9 @@ http.createServer((req, res) => {
               currentBalance: parseFloat(balance)
             }
           };
-          successResponse(res, responseBody);
-          return;
+          return successResponse(res, responseBody);
         } catch (e) {
-          errorResponse(res, e);
-          return;
+          return errorResponse(res, e);
         }
       case 'GIFTCARD_REDEEM':
         try {
@@ -109,11 +107,9 @@ http.createServer((req, res) => {
               redeemedValue: parseFloat((origBalance - parseFloat(card['balance'])).toFixed(2))
             }
           };
-          successResponse(res, responseBody);
-          return;
+          return successResponse(res, responseBody);
         } catch (e) {
-          errorResponse(res, e);
-          return;
+          return errorResponse(res, e);
         }
       case 'GIFTCARD_REVERSE':
         try {
@@ -126,15 +122,12 @@ http.createServer((req, res) => {
               currentBalance: parseFloat(card['balance'])
             }
           };
-          successResponse(res, responseBody);
-          return;
+          return successResponse(res, responseBody);
         } catch (e) {
-          errorResponse(res, e);
-          return;
+          return errorResponse(res, e);
         }
       default:
-        errorResponse(res, 'ERROR_INVALID_TOAST_TRANSACTION_TYPE');
-        return;
+        return errorResponse(res, 'ERROR_INVALID_TOAST_TRANSACTION_TYPE');
     }
   });
 }).listen(port);

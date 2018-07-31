@@ -47,6 +47,8 @@ function reverse(newTransactionGuid, oldTransactionGuid, identifier) {
   var transactionAmount = parseFloat(transaction['amount']);
   switch(transaction['method']){
     case "activate":
+      // If the current balance is different than the original balance, that means there have
+      // already been transactions on the card, which means it's too late to reverse the activate
       if (currentBalance != transactionAmount) throw "ERROR_TRANSACTION_CANNOT_BE_REVERSED"
       card['active'] = false;
       card['balance'] = '0.00';

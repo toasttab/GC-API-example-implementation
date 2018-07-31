@@ -1,32 +1,22 @@
 const db = require('./db')
-const cards = require('./cards')
 
-function save(transaction){
+function create(type, transactionGuid, identifier, amount){
+  if (transactionGuid == null) throw "ERROR_INVALID_INPUT_PROPERTIES";
+  db.push('transactions', {
+    guid: transactionGuid,
+    method: type,
+    amount: amount,
+    cardNumber: identifier,
+    reversed: false
+  });
+}
+
+function update(transaction){
   if (transaction['guid'] == null) throw "ERROR_INVALID_INPUT_PROPERTIES";
-  db.push('transactions', transaction);
+  db.update('transactions', transaction);
 }
 
-function reverse(transactionGuid, cardNumber){
-  var transaction = getTransaction(transactionGuid, cardNumber);
-  var method = transaction['method'];
-  var amount = transaction['amount'];
-  var cardNumber = transaction['cardNumber'];
-  var card;
-  switch(method){
-    case "activate":
-      card = cards.deactivate(cardNumber);
-      break;
-    case "redeem":
-      card = cards.addValue(cardNumber, amount);
-      break;
-    case "add_value":
-      card = cards.redeem(cardNumber, amount);
-      break;
-  }
-  return card['balance'];
-}
-
-function getTransaction(transactionGuid, cardNumber){
+function find(transactionGuid, cardNumber){
   var txn = db.find('transactions', {
     guid: transactionGuid,
     cardNumber: cardNumber
@@ -35,4 +25,4 @@ function getTransaction(transactionGuid, cardNumber){
   return txn;
 }
 
-module.exports = {save, reverse}
+module.exports = {create, update, find}

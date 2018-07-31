@@ -3,7 +3,6 @@ const https = require('https')
 const jwt = require('jsonwebtoken')
 
 const cards = require('./cards')
-const transactions = require('./transactions')
 
 // get the public key for JWT verification
 var req = https.get(publicKeyUrl(), (res) => {
@@ -52,13 +51,7 @@ http.createServer((req, res) => {
           info = getPropOrErr(body, 'activateTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           amount = getPropOrErr(info, 'initialBalance');
-          card = cards.activate(identifier, amount);
-          transactions.save({
-            guid: transactionGuid,
-            method: 'activate',
-            amount: amount,
-            cardNumber: identifier
-          });
+          card = cards.activate(transactionGuid, identifier, amount);
           responseBody = {
             activateResponse: {
               currentBalance: parseFloat(card['balance']) //parseFloat because API requires double, not string
@@ -75,13 +68,7 @@ http.createServer((req, res) => {
           info = getPropOrErr(body, 'addValueTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           amount = getPropOrErr(info, 'additionalValue');
-          card = cards.addValue(identifier, amount);
-          transactions.save({
-            guid: transactionGuid,
-            method: 'add_value',
-            amount: amount,
-            cardNumber: identifier
-          });
+          card = cards.addValue(transactionGuid, identifier, amount);
           responseBody = {
             addValueResponse: {
               currentBalance: parseFloat(card['balance'])
@@ -114,14 +101,8 @@ http.createServer((req, res) => {
           info = getPropOrErr(body, 'redeemTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           amount = getPropOrErr(info, 'redeemedValue');
-          var origBalance = parseFloat(cards.find(info['giftCardIdentifier'])['balance']);
-          card = cards.redeem(info['giftCardIdentifier'], amount);
-          transactions.save({
-            guid: transactionGuid,
-            method: 'redeem',
-            amount: amount,
-            cardNumber: identifier
-          });
+          var origBalance = parseFloat(cards.find(identifier)['balance']);
+          card = cards.redeem(transactionGuid, identifier, amount);
           responseBody = {
             redeemResponse: {
               currentBalance: parseFloat(card['balance']),
@@ -139,11 +120,10 @@ http.createServer((req, res) => {
           info = getPropOrErr(body, 'reverseTransactionInformation');
           identifier = getPropOrErr(info, 'giftCardIdentifier');
           var prevTxn = getPropOrErr(info, 'previousTransaction');
-          // logic for reversing a transaction is handled in transactions.js
-          var balance = transactions.reverse(prevTxn, identifier);
+          card = cards.reverse(transactionGuid, prevTxn, identifier);
           responseBody = {
             reverseResponse: {
-              currentBalance: parseFloat(balance)
+              currentBalance: parseFloat(card['balance'])
             }
           };
           successResponse(res, responseBody);

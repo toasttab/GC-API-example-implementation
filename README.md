@@ -29,3 +29,8 @@ By default it will use the public key (for JWT verification) from the Toast sand
 ```
 npm start https://ws-api.toasttab.com/usermgmt/v1/oauth/token_key
 ```
+
+to reset the database run:
+```
+npm run reset
+```

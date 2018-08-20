@@ -25,7 +25,7 @@ http.createServer((req, res) => {
   var transactionType = req.headers['Toast-Transaction-Type'.toLowerCase()]; // toLowerCase because the http module
   var transactionGuid = req.headers['Toast-Transaction-GUID'.toLowerCase()]; //     stores all headers as lowercase
   var restaurantGuid = req.headers['Toast-Restaurant-External-ID'.toLowerCase()];
-  var token = req.headers['authorization'];
+  var token = req.headers['Authorization'.toLowerCase()];
   // if one of the headers are null or invalid
   if ( !(transactionType && transactionGuid && restaurantGuid && token) ) {
     return errorResponse(res, 'ERROR_INVALID_INPUT_PROPERTIES');

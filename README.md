@@ -49,5 +49,4 @@ You can configure these tests to hit your endpoint by editing the `verify_GC.pos
 
 Download and install Postman here: https://www.getpostman.com/
 
-Hit the import button and choose the `verify_GC.postman_collection.json` file that is in this repository. Once you've imported, you can configure the tests to hit your implementation by editing the collection like so:
-![how to edit collection](https://raw.githubusercontent.com/toasttab/GC-API-example-implementation/master/READMEimages/Screen%20Shot%202018-09-21%20at%202.45.30%20PM.png)
+Follow this guide to import, run, and configure the test scripts in Postman  https://docs.google.com/document/d/1An94NrwCtqefX1Z2XXpi6hvIwhEELhL7Ijo5_GsWVxk/edit?usp=sharing

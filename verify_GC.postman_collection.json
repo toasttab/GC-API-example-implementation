@@ -1,0 +1,2464 @@
+{
+	"info": {
+		"_postman_id": "55e24c55-9a0d-4948-b399-ba8ee617d89e",
+		"name": "GC Integration Verification",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SUCCESS REQUEST",
+			"item": [
+				{
+					"name": "Normal Activate Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9a506216-31a9-42df-8c2c-e4af7c7cc410",
+								"type": "text/javascript",
+								"exec": [
+									"pm.globals.unset('limited implementation');",
+									"",
+									"var response = JSON.parse(responseBody);",
+									"var requestBody = JSON.parse(request.data);",
+									"",
+									"var statusIsAccept = (response.transactionStatus == \"ACCEPT\");",
+									"var statusIsNotSupported = (response.transactionStatus == \"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");",
+									"tests[\"transactionStatus is ACCEPT or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (statusIsAccept || statusIsNotSupported);",
+									"if (statusIsAccept) {",
+									"    tests[\"activateResponse is Present\"] = responseBody.has(\"activateResponse\");",
+									"    tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"    tests[\"activateResponse is not null\"] = !!response.activateResponse;",
+									"    if(response.activateResponse){",
+									"        tests[\"currentBalance is Present\"] = !!response.activateResponse && !!response.activateResponse.currentBalance;",
+									"        tests[\"currentBalance is a number\"] = !!response.activateResponse && typeof response.activateResponse.currentBalance === 'number';",
+									"        tests[\"currentBalance is non-negative\"] = !!response.activateResponse && response.activateResponse.currentBalance >= 0;",
+									"    }",
+									"    ",
+									"    pm.environment.set('TRANSACTION_GUID_TO_REVERSE', request.headers[\"toast-transaction-guid\"]);",
+									"    pm.environment.set('CARD_TO_REVERSE', requestBody.activateTransactionInformation.giftCardIdentifier);",
+									"} else {",
+									"    postman.setNextRequest(\"Normal Add Value Workflow\");",
+									"    pm.globals.set('limited implementation', \"true\");",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ACTIVATE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"activateTransactionInformation\":{\n    \"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SUCCESS_REQUEST}}\",\n    \"initialBalance\": \"5.0\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Activate Reverse Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "44516cfe-37c4-4f26-ac91-d6270832505d",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"reverseResponse is Present\"] = responseBody.has(\"reverseResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"// Check the activeResponse",
+									"tests[\"reverseResponse is not null\"] = !!response.reverseResponse;",
+									"if(response.reverseResponse){",
+									"    tests[\"currentBalance is Present\"] = response.reverseResponse.currentBalance !== null;",
+									"    tests[\"currentBalance is a number\"] = typeof response.reverseResponse.currentBalance === 'number';",
+									"    tests[\"currentBalance is non-negative\"] = response.reverseResponse.currentBalance >= 0;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{CARD_TO_REVERSE}}\",\n\t\t\"previousTransaction\": \"{{TRANSACTION_GUID_TO_REVERSE}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Add Value Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b58d9ff-4979-4297-aa30-b204ef97d05b",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"var requestBody = JSON.parse(request.data);",
+									"",
+									"var statusIsAccept = (response.transactionStatus == \"ACCEPT\");",
+									"var statusIsNotSupported = (response.transactionStatus == \"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");",
+									"tests[\"transactionStatus is ACCEPT or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (statusIsAccept || statusIsNotSupported);",
+									"if (statusIsAccept) {",
+									"    tests[\"addValueResponse is Present\"] = responseBody.has(\"addValueResponse\");",
+									"    var addValueResponse = response.addValueResponse;",
+									"    tests[\"addValueResponse is not null\"] = !!response.addValueResponse;",
+									"    if(tests[\"addValueResponse is not null\"]){",
+									"        tests[\"currentBalance is Present\"] = !!response.addValueResponse.currentBalance;",
+									"        tests[\"currentBalance is a number\"] = typeof response.addValueResponse.currentBalance === 'number';",
+									"        tests[\"currentBalance is non-negative\"] = response.addValueResponse.currentBalance >= 0;",
+									"    }",
+									"    pm.environment.set('TRANSACTION_GUID_TO_REVERSE', request.headers[\"toast-transaction-guid\"]);",
+									"    pm.environment.set('CARD_TO_REVERSE', requestBody.addValueTransactionInformation.giftCardIdentifier);",
+									"} else {",
+									"    postman.setNextRequest(\"Normal Redeem Workflow\");",
+									"    pm.globals.set('limited implementation', \"true\");",
+									"}",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e14a0f2f-cade-40c7-9beb-d51bb73f82cd",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ADD_VALUE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"addValueTransactionInformation\": {\n    \"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n    \"additionalValue\": \"5.0\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Add Value Reverse Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3d82fd7d-46d5-437e-886b-07d8ac8ff81f",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"reverseResponse is Present\"] = responseBody.has(\"reverseResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"// Check the activeResponse",
+									"tests[\"reverseResponse is not null\"] = !!response.reverseResponse;",
+									"if(response.reverseResponse){",
+									"  tests[\"currentBalance is Present\"] = response.reverseResponse.currentBalance !== null;",
+									"  tests[\"currentBalance is a number\"] = typeof response.reverseResponse.currentBalance === 'number';",
+									"  tests[\"currentBalance is non-negative\"] = response.reverseResponse.currentBalance >= 0;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reverseTransactionInformation\": {\n    \"giftCardIdentifier\" : \"{{CARD_TO_REVERSE}}\",\n    \"previousTransaction\": \"{{TRANSACTION_GUID_TO_REVERSE}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Redeem Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "27a7a6fd-02be-4d3a-aae0-53f27550a674",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"var requestBody = JSON.parse(request.data);",
+									"",
+									"var statusIsAccept = (response.transactionStatus == \"ACCEPT\");",
+									"var statusIsNotSupported = (response.transactionStatus == \"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");",
+									"tests[\"transactionStatus is ACCEPT or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (statusIsAccept || statusIsNotSupported);",
+									"",
+									"if (statusIsAccept) {",
+									"    tests[\"redeemResponse is Present\"] = responseBody.has(\"redeemResponse\");",
+									"    tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"    tests[\"redeemResponse is not null\"] = !!response.redeemResponse;",
+									"    tests[\"currentBalance is Present\"] = response.redeemResponse.currentBalance !== null;",
+									"    tests[\"currentBalance is a number\"] = typeof response.redeemResponse.currentBalance === 'number';",
+									"    tests[\"currentBalance is non-negative\"] = response.redeemResponse.currentBalance >= 0;",
+									"    tests[\"redeemedValue is Present\"] = !!response.redeemResponse.redeemedValue;",
+									"    tests[\"redeemedValue is a number\"] = typeof response.redeemResponse.redeemedValue === 'number';",
+									"    tests[\"redeemedValue is non-negative\"] = response.redeemResponse.redeemedValue >= 0;",
+									"    ",
+									"    pm.environment.set('TRANSACTION_GUID_TO_REVERSE', request.headers[\"toast-transaction-guid\"]);",
+									"    pm.environment.set('CARD_TO_REVERSE', requestBody.redeemTransactionInformation.giftCardIdentifier);",
+									"} else {",
+									"    postman.setNextRequest(\"Normal Get Balance Workflow\");",
+									"    pm.globals.set('limited implementation', \"true\");",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REDEEM}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"redeemTransactionInformation\":{\n    \"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n    \"redeemedValue\": \"3.0\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Redeem Reverse Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8768bee3-ba0d-42ed-8024-f913a5e0e822",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"reverseResponse is Present\"] = responseBody.has(\"reverseResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"// Check the activeResponse",
+									"tests[\"reverseResponse is not null\"] = !!response.reverseResponse;",
+									"tests[\"currentBalance is Present\"] = response.reverseResponse.currentBalance !== null;",
+									"tests[\"currentBalance is a number\"] = typeof response.reverseResponse.currentBalance === 'number';",
+									"tests[\"currentBalance is non-negative\"] = response.reverseResponse.currentBalance >= 0;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reverseTransactionInformation\": {\n    \"giftCardIdentifier\" : \"{{CARD_TO_REVERSE}}\",\n    \"previousTransaction\": \"{{TRANSACTION_GUID_TO_REVERSE}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Normal Get Balance Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7a6d1aa2-31ff-499e-b242-be00009f90f8",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"getBalanceResponse is Present\"] = responseBody.has(\"getBalanceResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"// Check the activeResponse",
+									"tests[\"getBalanceResponse is not null\"] = !!response.getBalanceResponse;",
+									"tests[\"currentBalance is Present\"] = response.getBalanceResponse.currentBalance !== null;",
+									"tests[\"currentBalance is a number\"] = typeof response.getBalanceResponse.currentBalance === 'number';",
+									"tests[\"currentBalance is non-negative\"] = response.getBalanceResponse.currentBalance >= 0;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK and have a body\", () => {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_CARD_INVALID",
+			"item": [
+				{
+					"name": "Activate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ce8214ee-51e3-4a19-a2c6-84157779d16e",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_CARD_INVALID or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (response.transactionStatus==\"ERROR_CARD_INVALID\"||response.transactionStatus==\"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ACTIVATE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activateTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{INVALID_CARD}}\",\n\t\t\"initialBalance\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Value",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dae7ae3-82d3-4eaf-a7ea-25144e38e1d0",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_CARD_INVALID or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (response.transactionStatus==\"ERROR_CARD_INVALID\"||response.transactionStatus==\"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ADD_VALUE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"addValueTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{INVALID_CARD}}\",\n\t\t\"additionalValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Redeem Value",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "31182275-8440-4266-ae9c-f44bc1187000",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_CARD_INVALID or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (response.transactionStatus==\"ERROR_CARD_INVALID\"||response.transactionStatus==\"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REDEEM}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"redeemTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{INVALID_CARD}}\",\n\t\t\"redeemedValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "521666bd-0fc7-4945-b6b0-c64e41a4c462",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_CARD_INVALID\"] = response.transactionStatus == \"ERROR_CARD_INVALID\";"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{INVALID_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reverse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fd2bd90a-7650-449d-94c9-6fdc89a5236e",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_CARD_INVALID\"] = response.transactionStatus == \"ERROR_CARD_INVALID\";"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{REVERSABLE_TRANSACTION}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{INVALID_CARD}}\",\n\t\t\"previousTransaction\": \"{{REVERSABLE_TRANSACTION}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending any request with an invalid card number should return ERROR_CARD_INVALID in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"ERROR_INVALID_CARD: Respond with status 400 and body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"ERROR_INVALID_CARD: transactionStatus is present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_TRANSACTION_DOES_NOT_EXIST",
+			"item": [
+				{
+					"name": "Reverse with guid that doesn't exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88f94bf1-da8f-4449-8b70-47e65bc8bfb5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n\t\t\"previousTransaction\": \"{{$guid}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending a reverse request with an invalid transaction guid should return ERROR_TRANSACTION_DOES_NOT_EXIST in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"var response = JSON.parse(responseBody);",
+							"tests[\"transactionStatus is ERROR_TRANSACTION_DOES_NOT_EXIST\"] = response.transactionStatus == \"ERROR_TRANSACTION_DOES_NOT_EXIST\";"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_CARD_ALREADY_ACTIVATED",
+			"item": [
+				{
+					"name": "Activate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2bc58c4f-bdb5-445e-9564-6759c3fc14b5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ACTIVATE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activateTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n\t\t\"initialBalance\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending an activate request with an activated card number should return ERROR_CARD_ALREADY_ACTIVATED in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"var response = JSON.parse(responseBody);",
+							"tests[\"transactionStatus is ERROR_CARD_ALREADY_ACTIVATED or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (response.transactionStatus==\"ERROR_CARD_ALREADY_ACTIVATED\"||response.transactionStatus==\"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_CARD_NOT_ACTIVATED",
+			"item": [
+				{
+					"name": "Add Value",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cc8b6cfa-97e4-439b-a455-21319bedc410",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ADD_VALUE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"addValueTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_ERROR}}\",\n\t\t\"additionalValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Redeem Value",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4821d46e-fc18-49d1-b7a1-c5556317f76d",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REDEEM}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"redeemTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_ERROR}}\",\n\t\t\"redeemedValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94728796-ea45-4b51-9924-6231b02c3c23",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_ERROR}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending any request other than activate with a non-activated card should return ERROR_CARD_NOT_ACTIVATED in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"var response = JSON.parse(responseBody);",
+							"tests[\"transactionStatus is ERROR_CARD_NOT_ACTIVATED or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (response.transactionStatus==\"ERROR_CARD_NOT_ACTIVATED\"||response.transactionStatus==\"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_INVALID_TOAST_TRANSACTION_TYPE",
+			"item": [
+				{
+					"name": "Get Balance with invalid transaction type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94728796-ea45-4b51-9924-6231b02c3c23",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_INVALID}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending any request with an invalid transaction type should return ERROR_INVALID_TOAST_TRANSACTION_TYPE in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"var response = JSON.parse(responseBody);",
+							"tests[\"transactionStatus is ERROR_INVALID_TOAST_TRANSACTION_TYPE\"] = response.transactionStatus == \"ERROR_INVALID_TOAST_TRANSACTION_TYPE\";"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_INVALID_TOKEN",
+			"item": [
+				{
+					"name": "Get Balance with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94728796-ea45-4b51-9924-6231b02c3c23",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{INVALID_AUTHORIZATION}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending any request with an invalid token should return ERROR_INVALID_TOKEN in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"var response = JSON.parse(responseBody);",
+							"tests[\"transactionStatus is ERROR_INVALID_TOKEN\"] = response.transactionStatus == \"ERROR_INVALID_TOKEN\";"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_INVALID_INPUT_PROPERTIES",
+			"item": [
+				{
+					"name": "Get Balance with missing header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94728796-ea45-4b51-9924-6231b02c3c23",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance with incorrect giftCardIdentifier key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "49acd8dc-1d09-437e-9d76-4f3d0a2bf38e",
+								"type": "text/javascript",
+								"exec": [
+									"console.log(pm.environment.get('limited implementation'));",
+									"if(pm.environment.get('limited implementation')){",
+									"    postman.setNextRequest(null);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifierWrongKey\" : \"{{VALID_ACTIVATED_CARD}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Sending any request with any missing Json keys should return ERROR_INVALID_INPUT_PROPERTIES in transactionStatus.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response with error and have a body\", () => {",
+							"    pm.response.to.have.status(400);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});",
+							"",
+							"try{",
+							"    var response = JSON.parse(responseBody);",
+							"} catch (e) {",
+							"    return;",
+							"}",
+							"if (response.transactionStatus) {",
+							"    tests[\"transactionStatus is ERROR_INVALID_INPUT_PROPERTIES\"] = response.transactionStatus == \"ERROR_INVALID_INPUT_PROPERTIES\";",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "SIMPLE WORKFLOW",
+			"item": [
+				{
+					"name": "GET THE INITIAL BALANCE ON AN INACTIVE CARD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ac520cd8-f73d-475d-8156-1d3a11a3d7b5",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"if(pm.globals.get('limited implementation')==\"true\"){",
+									"    postman.setNextRequest(null);",
+									"}else{",
+									"    tests[\"transactionStatus is ERROR_CARD_NOT_ACTIVATED\"] = response.transactionStatus == \"ERROR_CARD_NOT_ACTIVATED\";",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTIVATE CARD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "06f69b3d-02dc-43dc-bf0e-5a34bda5c0a7",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"var statusIsAccept = (response.transactionStatus == \"ACCEPT\");",
+									"var statusIsNotSupported = (response.transactionStatus == \"ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\");",
+									"tests[\"transactionStatus is ACCEPT or ERROR_TOAST_TRANSACTION_TYPE_NOT_SUPPORTED\"] = (statusIsAccept || statusIsNotSupported);",
+									"if(statusIsAccept){",
+									"    tests[\"activateResponse is Present\"] = responseBody.has(\"activateResponse\");",
+									"    tests[\"currentBalance is 5\"] = response.activateResponse.currentBalance == 5.00;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ACTIVATE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activateTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\",\n\t\t\"initialBalance\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET THE BALANCE AFTER ACTIVATE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fcc0583d-257a-4e36-8c86-4b535ffc3d6c",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"getBalanceResponse is Present\"] = responseBody.has(\"getBalanceResponse\");",
+									"tests[\"currentBalance is 5.0\"] = response.getBalanceResponse.currentBalance == 5.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD VALUE TO THE CARD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e811b9ac-51a9-4954-94ed-afcee7293ce3",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"addValueResponse is Present\"] = responseBody.has(\"addValueResponse\");",
+									"tests[\"currentBalance is 10\"] = response.addValueResponse.currentBalance == 10.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ADD_VALUE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"addValueTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\",\n\t\t\"additionalValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET THE BALANCE AFTER ADD VALUE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1088d27-a716-48dc-93b0-1ac50d10ae90",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"getBalanceResponse is Present\"] = responseBody.has(\"getBalanceResponse\");",
+									"tests[\"currentBalance is 10.0\"] = response.getBalanceResponse.currentBalance == 10.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REDEEM 5 FROM THE CARD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0154bf70-a0fe-4c6d-8a63-95ed91271ee7",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"redeemResponse is Present\"] = responseBody.has(\"redeemResponse\");",
+									"tests[\"currentBalance is 5\"] = response.redeemResponse.currentBalance == 5.00;",
+									"tests[\"redeemedValue is 5\"] = response.redeemResponse.redeemedValue == 5.00;",
+									"",
+									"pm.environment.set('REDEEM_GUID', request.headers[\"toast-transaction-guid\"]);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b969bcc2-a6d8-4546-bac4-0b6913764108",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REDEEM}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"redeemTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\",\n\t\t\"redeemedValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET THE BALANCE AFTER REDEEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9e538f42-dea2-4dcf-bfa6-7152633eea97",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"getBalanceResponse is Present\"] = responseBody.has(\"getBalanceResponse\");",
+									"tests[\"currentBalance is 5.0\"] = response.getBalanceResponse.currentBalance == 5.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REVERSE PREVIOUS REDEEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6586a6b2-316d-4d90-a93c-8bbae58f305f",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"reverseResponse is Present\"] = responseBody.has(\"reverseResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"currentBalance is 10\"] = response.reverseResponse.currentBalance == 10.00;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "11ba11fe-dc46-4380-a79a-69a4da4993c4",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\",\n\t\t\"previousTransaction\": \"{{REDEEM_GUID}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET THE BALANCE AFTER REVERSE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "28b5e90b-f1b9-478b-a1c9-60b6858ca168",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"getBalanceResponse is Present\"] = responseBody.has(\"getBalanceResponse\");",
+									"tests[\"currentBalance is 10.0\"] = response.getBalanceResponse.currentBalance == 10.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_GET_BALANCE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"getBalanceTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\"\t\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REDEEM 15 FROM THE CARD - PARTIAL REDEEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9bea307a-0611-47e5-a38f-01f5516371f8",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"tests[\"redeemResponse is Present\"] = responseBody.has(\"redeemResponse\");",
+									"tests[\"currentBalance is 0\"] = response.redeemResponse.currentBalance === 0.00;",
+									"tests[\"redeemedValue is 10\"] = response.redeemResponse.redeemedValue == 10.00;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REDEEM}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"redeemTransactionInformation\":{\n\t\t\"giftCardIdentifier\" : \"{{VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW}}\",\n\t\t\"redeemedValue\": \"15.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response has a json body\", () => {",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ERROR_TRANSACTION_CANNOT_BE_REVERSED",
+			"item": [
+				{
+					"name": "ADD VALUE TO THE CARD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d35e7375-649f-400d-b184-8bd54f951262",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"pm.environment.set('ADD_VALUE_GUID', request.headers[\"toast-transaction-guid\"]);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_ADD_VALUE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"addValueTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n\t\t\"additionalValue\": \"5.0\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REVERSE PREVIOUS ADD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "13d5b8a4-6ae0-4702-8bba-c7bfb190a3e3",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"tests[\"reverseResponse is Present\"] = responseBody.has(\"reverseResponse\");",
+									"tests[\"transactionStatus is Accept\"] = response.transactionStatus == \"ACCEPT\";",
+									"",
+									"pm.environment.set('REVERSE_GUID', request.headers[\"toast-transaction-guid\"]);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "11ba11fe-dc46-4380-a79a-69a4da4993c4",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n\t\t\"previousTransaction\": \"{{ADD_VALUE_GUID}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REVERSE A REVERSE[ERROR_TRANSACTION_CANNOT_BE_REVERSED]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0b102de0-bcfc-4cab-bf0d-409908116238",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response with error and have a body\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"transactionStatus is Present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+									"});",
+									"",
+									"var response = JSON.parse(responseBody);",
+									"tests[\"transactionStatus is ERROR_TRANSACTION_CANNOT_BE_REVERSED\"] = response.transactionStatus == \"ERROR_TRANSACTION_CANNOT_BE_REVERSED\";"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Toast-Transaction-Type",
+								"value": "{{GIFTCARD_REVERSE}}"
+							},
+							{
+								"key": "Toast-Restaurant-External-ID",
+								"value": "{{RESTAURANT_EXTERNAL_ID}}"
+							},
+							{
+								"key": "Toast-Transaction-GUID",
+								"value": "{{$guid}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reverseTransactionInformation\": {\n\t\t\"giftCardIdentifier\" : \"{{VALID_ACTIVATED_CARD}}\",\n\t\t\"previousTransaction\": \"{{REVERSE_GUID}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b3cc9d67-ba1a-4202-9567-4ef7cd8cd902",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01fc17a6-b23f-4b31-8c88-e80bf56443a0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response has a json body\", () => {",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"transactionStatus is Present\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"transactionStatus\");",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "254bf490-1d43-4f7d-b58d-80625dacfbc7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f5f08072-08e9-40de-979e-751517189183",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "edfe9d5b-1104-459e-ad4c-53afdfb2913f",
+			"key": "URL",
+			"value": "http://services.eng.toasttab.com:18181",
+			"type": "string"
+		},
+		{
+			"id": "d2998741-85c1-418b-a92e-de257c89cc80",
+			"key": "VALID_ACTIVATED_CARD",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"id": "94d2c7a0-7c42-4ecd-b4d3-344141a5f1ab",
+			"key": "VALID_INACTIVATED_CARD_FOR_ERROR",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"id": "0ffade69-917c-46fb-89de-96803df16626",
+			"key": "VALID_INACTIVATED_CARD_FOR_SUCCESS_REQUEST",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"id": "af15f741-779a-4bff-b8eb-6707b48f2a71",
+			"key": "VALID_INACTIVATED_CARD_FOR_SIMPLE_WORKFLOW",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"id": "e067a2bc-7252-429e-8be1-2585fad4bf80",
+			"key": "INVALID_CARD",
+			"value": "ASDF",
+			"type": "string"
+		},
+		{
+			"id": "a5e74c59-c792-435d-952e-3ce3eb14eb0c",
+			"key": "REVERSABLE_TRANSACTION",
+			"value": "df79ad10-db89-4751-be66-006e99e01d4c",
+			"type": "string"
+		},
+		{
+			"id": "ca822447-8208-40fd-bb57-e0c0bd648f02",
+			"key": "RESTAURANT_EXTERNAL_ID",
+			"value": "9067c222-7d3a-4e5c-aa1e-15ded776a07b",
+			"type": "string"
+		},
+		{
+			"id": "532f0064-82a0-41b8-9e4c-691611bd363c",
+			"key": "GIFTCARD_ACTIVATE",
+			"value": "GIFTCARD_ACTIVATE",
+			"type": "string"
+		},
+		{
+			"id": "a2f950e0-4e77-43cc-95a9-91e8cf3c4cb0",
+			"key": "GIFTCARD_ADD_VALUE",
+			"value": "GIFTCARD_ADD_VALUE",
+			"type": "string"
+		},
+		{
+			"id": "c7f2dd44-954b-4257-a9ca-1a6c31811355",
+			"key": "GIFTCARD_REDEEM",
+			"value": "GIFTCARD_REDEEM",
+			"type": "string"
+		},
+		{
+			"id": "a727a285-8af8-4d8d-ac03-b14863716eed",
+			"key": "GIFTCARD_GET_BALANCE",
+			"value": "GIFTCARD_GET_BALANCE",
+			"type": "string"
+		},
+		{
+			"id": "5636eaba-847a-4185-b6c4-19191e56672c",
+			"key": "GIFTCARD_REVERSE",
+			"value": "GIFTCARD_REVERSE",
+			"type": "string"
+		},
+		{
+			"id": "65b55daf-a49e-4f30-84a8-44d818a5b8f8",
+			"key": "GIFTCARD_INVALID",
+			"value": "GIFTCARDGETBALANCE",
+			"type": "string"
+		},
+		{
+			"id": "c75adc44-88c3-4f65-b5c4-62e17f7c516c",
+			"key": "Authorization",
+			"value": "eyJhbGciOiJSUzI1NiJ9.eyJuYW1pbmdBdXRob3JpdHkiOiJHQ0xPWSIsInJzR3VpZCI6IjUwZjU1MmZjLWNjMjQtNGNiZS04NGUxLTIwZDk2ZTY0NGM4YiIsInNjb3BlIjpbImdjbG95Il0sImV4cCI6MjE2MzIzMzgwMSwianRpIjoiMzYzNzM4ZDItYzMzMi00NjRhLWE1ZWYtYTI3Mjg2YzdlOWFjIiwiY2xpZW50X2lkIjoiZ2Nsb3ktYXBpIn0.K9wDkmFU2Rws7qzNo723Z3z2VVqvAag3WyC2xs0i_WUC80OcSJEGDDrYwp3LJoD6UnHeiYH7P0Zgxe_8p1F6TiXfqhkZuvwyZv0mX6HV9xugNQ5Iw-mil-TwsE4yR9gywaOPychh8dz038eCeKnZNnrmDjtdzgN-Wn5z9_0ZzfTj6fabPUI66NpOAr9JqJUIGwm9N6BFBDekI6kYnCQBb_Z-SfqAoVVCVe_clGxJVGH81nq9lbFK2rx4GSdIIa8e6ZfjFo20RXhodUTS_x49EihFkymnmXjLUCxBO_fXB7nXkRqFgZnvgzL6FK0XE7OQ4odeot-mrwH6wYQUt9w2Wg",
+			"type": "string"
+		},
+		{
+			"id": "a8175181-5965-42bb-9033-71471ecf9e5a",
+			"key": "INVALID_AUTHORIZATION",
+			"value": "eyJhbGciOiJSUzI1NiJ9.eyJuYW1pbmdBdXRob3JpdHkiOiJHQ0xPWSIsInJzR3VpZCI6IjUwZjU1MmZjLWNjMjQtNGNiZS04NGUxLTIwZDk2ZTY0NGM4YiIsInNjb3BlIjpbImdjbG95Il0sImV4cCI6MjE2MzIzMzgwMSwianRpIjoiMzYzNzM4ZDItYzMzMi00NjRhLWE1ZWYtYTI3Mjg2YzdlOWFjIiwiY2xpZW50X2lkIjoiZ2Nsb3ktYXBpIn0.K9wDkmFU2Rws7qzNo723Z3z2VVqvAag3WyC2xs0i_WUC80OcSJEGDDrYwp3LJoD6UnHeiYH7P0Zgxe_8p1F6TiXfqhkZuvwyZv0mX6HV9xugNQ5Iw-mil-TwsE4yR9gywaOPychh8dz038eCeKnZNnrmDjtdzgN-Wn5z9_0ZzfTj6fabPUI66NpOAr9JqJUIGwm9N6BFBDekI6kYnCQBb_Z-SfqAoVVCVe_clGxJVGH81nq9lbFK2rx4GSdIIa8e6ZfjFo20RXhodUTS_x49EihFkymnmXjLUCxBO_fXB7nXkRqFgZnvgzL6FK0XE7OQ4odeot-mrwH6wYQUt9w2Wa",
+			"type": "string"
+		}
+	]
+}

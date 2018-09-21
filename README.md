@@ -41,13 +41,13 @@ npm run reset
 
 Included in this repository are Postman test scripts which can be used to test an implementation of the Toast Gift Card API. Currently they are configured to test this reference implementation although they can be configured to test any implementation.
 
-They can be run through the Postman GUI or the Postman CLI, `newman` which will be installed as a part of this node package.
+They can be run through the Postman GUI or the command line.
 
-To run them with the CLI simply run:
-```
-npm test
-```
-or, alternatively:
-```
-newman run verify_GC.postman_collection.json
-```
+To run the tests on the command line, simply run `npm test` (with the server running).
+
+You can configure these tests to hit your endpoint by editing the `verify_GC.postman_collection.json` file, in the "variable" section at the bottom. But this is much easier to do in the Postman GUI.
+
+Download and install Postman here: https://www.getpostman.com/
+
+Hit the import button and choose the `verify_GC.postman_collection.json` file that is in this repository. Once you've imported, you can configure the tests to hit your implementation by editing the collection like so:
+![how to edit collection](https://raw.githubusercontent.com/toasttab/GC-API-example-implementation/master/READMEimages/Screen%20Shot%202018-09-21%20at%202.45.30%20PM.png)

@@ -54,7 +54,7 @@ http
       body += chunk.toString(); // converting body buffer to string
     });
     req.on("end", () => {
-      console.log("Request recieved: " + body);
+      console.log("Request received: " + body);
       body = JSON.parse(body); // converting body string to JSON
       var info;
       var identifier;

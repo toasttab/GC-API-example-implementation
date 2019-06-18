@@ -26,8 +26,6 @@ if (publicKeyUrl.includes("https")) {
   http.get(publicKeyUrl, res => parsePublicKey(res));
 }
 
-var port = 18181;
-
 // In a real implementation, HTTPS must be used
 http
   .createServer((req, res) => {
@@ -145,9 +143,17 @@ http
       }
     });
   })
-  .listen(port);
+  .listen(getPort());
 
-console.log("Server is up and listening at localhost:" + port);
+console.log("Server is up and listening at localhost:" + getPort());
+
+function getPort() {
+  if (process.argv[3] != null) {
+    return process.argv[3];
+  } else {
+    return 18182;
+  }
+}
 
 function successResponse(res, responseBody) {
   responseBody["transactionStatus"] = "ACCEPT";

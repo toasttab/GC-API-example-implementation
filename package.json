@@ -6,7 +6,7 @@
   "dependencies": {
     "jsonwebtoken": "^8.3.0",
     "lowdb": "^1.0.0",
-    "newman": "^4.1.0"
+    "newman": "^4.5.7"
   },
   "devDependencies": {},
   "scripts": {

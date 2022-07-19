@@ -52,7 +52,7 @@ http
       body += chunk.toString(); // converting body buffer to string
     });
     req.on("end", () => {
-      console.log("Request received: " + body);
+      console.log("Request received, type: " + transactionType + ", GUID: " + transactionGuid + ": " + body);
       body = JSON.parse(body); // converting body string to JSON
       var info;
       var identifier;

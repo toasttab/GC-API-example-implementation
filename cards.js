@@ -30,11 +30,17 @@ function getBalance(identifier) {
 function redeem(transactionGuid, identifier, amount) {
   var card = find(identifier);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
+  var requestedAmount = parseFloat(amount);
   var origBalance = parseFloat(card['balance']);
-  var balance = origBalance - parseFloat(amount);
-  if (balance < 0.0) balance = 0.0;
+  var balance = origBalance - requestedAmount;
+  if (balance < 0.0) {
+    var actualAmount = origBalance;
+    balance = 0.0;
+  } else {
+    var actualAmount = requestedAmount;
+  }
   card['balance'] = balance.toFixed(2);
-  transactions.create('redeem', transactionGuid, identifier, amount);
+  transactions.create('redeem', transactionGuid, identifier, actualAmount);
   return update(card);
 }
 

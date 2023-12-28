@@ -156,7 +156,9 @@ function getPort() {
 }
 
 function successResponse(res, responseBody) {
-  responseBody["transactionStatus"] = "ACCEPT";
+  responseBody["transactionStatus"] = (typeof responseBody["transactionStatus"] === 'undefined')
+    ? "ACCEPT"
+    : responseBody["transactionStatus"]
   responseBody = JSON.stringify(responseBody);
   res.writeHead(200, { "Content-Type": "application/json" });
   console.log("Successful response: " + responseBody);

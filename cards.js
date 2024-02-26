@@ -21,23 +21,26 @@ function addValue(transactionGuid, identifier, amount) {
   return update(card);
 }
 
-function getBalance(identifier) {
+function getBalance(identifier, verificationCode) {
   var card = find(identifier);
+  validateVerificationCode(verificationCode, identifier, card);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   return card['balance'];
 }
 
-function redeem(transactionGuid, identifier, amount) {
+function redeem(transactionGuid, identifier, verificationCode, amount) {
   var card = find(identifier);
+  validateVerificationCode(verificationCode, identifier, card);
   if(!card['active']) throw "ERROR_CARD_NOT_ACTIVATED";
   var requestedAmount = parseFloat(amount);
   var origBalance = parseFloat(card['balance']);
   var balance = origBalance - requestedAmount;
+  var actualAmount;
   if (balance < 0.0) {
-    var actualAmount = origBalance;
+    actualAmount = origBalance;
     balance = 0.0;
   } else {
-    var actualAmount = requestedAmount;
+    actualAmount = requestedAmount;
   }
   card['balance'] = balance.toFixed(2);
   transactions.create('redeem', transactionGuid, identifier, actualAmount);
@@ -84,6 +87,18 @@ function find(identifier) {
 function update(card) {
   db.update('cards', card);
   return card;
+}
+
+function validateVerificationCode(verificationCode, identifier, card) {
+  if (verificationCode['source'] === 'VERIFIED' || identifier['source'] === 'SWIPE') { return }
+
+  if (!verificationCode || !verificationCode['value'] || verificationCode.length === 0) {
+    throw "ERROR_VERIFICATION_REQUIRED";
+  }
+
+  if (verificationCode['value'] !== card['verificationCode']) {
+    throw "ERROR_VERIFICATION_FAILED";
+  }
 }
 
 module.exports = {activate, addValue, getBalance, redeem, reverse, find};

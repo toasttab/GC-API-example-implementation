@@ -94,7 +94,7 @@ http
           try {
             info = getPropOrErr(body, "getBalanceTransactionInformation");
             identifier = getPropOrErr(info, "giftCardIdentifier");
-            var balance = cards.getBalance(identifier);
+            let balance = cards.getBalance(identifier, getPropOrErr(info, "verificationCode"));
             responseBody = {
               getBalanceResponse: {
                 currentBalance: parseFloat(balance)
@@ -108,9 +108,10 @@ http
           try {
             info = getPropOrErr(body, "redeemTransactionInformation");
             identifier = getPropOrErr(info, "giftCardIdentifier");
+            let verificationCode = getPropOrErr(info, "verificationCode");
             amount = getPropOrErr(info, "redeemedValue");
-            var origBalance = parseFloat(cards.find(identifier)["balance"]);
-            card = cards.redeem(transactionGuid, identifier, amount);
+            let origBalance = parseFloat(cards.find(identifier, verificationCode)["balance"]);
+            card = cards.redeem(transactionGuid, identifier, verificationCode, amount);
             responseBody = {
               redeemResponse: {
                 currentBalance: parseFloat(card["balance"]),
@@ -119,10 +120,10 @@ http
                 )
               }
             };
-            return successResponse(res, responseBody);
-          } catch (e) {
+           return successResponse(res, responseBody);
+         } catch (e) {
             return errorResponse(res, e);
-          }
+         }
         case "GIFTCARD_REVERSE":
           try {
             info = getPropOrErr(body, "reverseTransactionInformation");

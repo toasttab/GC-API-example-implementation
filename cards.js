@@ -90,9 +90,12 @@ function update(card) {
 }
 
 function validateVerificationCode(verificationCode, identifier, card) {
-  if (verificationCode['source'] === 'VERIFIED' || identifier['source'] === 'SWIPE') { return }
+  if (verificationCode['source'] === 'VERIFIED' || identifier['source'] === 'SWIPE'
+      || !card['verificationCode']) {
+    return
+  }
 
-  if (!verificationCode || !verificationCode['value'] || verificationCode.length === 0) {
+  if (!verificationCode['value'] || verificationCode.length === 0) {
     throw "ERROR_VERIFICATION_REQUIRED";
   }
 

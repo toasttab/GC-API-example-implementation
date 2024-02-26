@@ -90,8 +90,7 @@ function update(card) {
 }
 
 function validateVerificationCode(verificationCode, identifier, card) {
-  if (verificationCode['source'] === 'VERIFIED' || identifier['source'] === 'SWIPE'
-      || !card['verificationCode']) {
+  if (verificationCode['source'] === 'VERIFIED' || !card['verificationCode']) {
     return
   }
 

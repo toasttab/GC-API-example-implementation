@@ -12,18 +12,21 @@
     },
     {
       "number": "3",
-      "balance": "0.00",
-      "active": false
+      "balance": "50.00",
+      "active": true,
+      "verificationCode": "123"
     },
     {
       "number": "4",
       "balance": "0.00",
-      "active": false
+      "active": false,
+      "verificationCode": "123"
     },
     {
       "number": "5",
-      "balance": "0.00",
-      "active": false
+      "balance": "100.00",
+      "active": false,
+      "verificationCode": "123"
     }
   ],
   "transactions": [
